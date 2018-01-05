@@ -1,8 +1,8 @@
 {
-    "coin": "Sumokoin",
-    "symbol": "SUMO",
-    "coinUnits": 1000000000,
-    "coinDifficultyTarget": 240,
+    "coin": "Dero",
+    "symbol": "DERO",
+    "coinUnits": 1000000000000,
+    "coinDifficultyTarget": 120,
 
     "logging": {
         "files": {
@@ -107,14 +107,14 @@
         "interval": 10800,
         "maxAddresses": 30,
         "mixin": 12,
-        "transferFee": 10000000,
-        "minPayment": 2000000000,
-        "maxTransactionAmount": 500000000000,
+        "transferFee": 5000000000,
+        "minPayment": 100000000000,
+        "maxTransactionAmount": 5000000000000,
         "denomination": 10000000,
         "useDynamicTransferFee": true,
-        "transferFeePerPayee": 4000000,
+        "transferFeePerPayee": 500000000,
         "minerPayFee": true,
-        "blockReward": 36.45
+        "blockReward": 30
     },
 
     "blockUnlocker": {
