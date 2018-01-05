@@ -1,7 +1,7 @@
-An updated cryptonote-sumokoin-pool fork
+An updated cryptonote pool fork
 ========================================
 
-High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, DuckNote, Monero, QuazarCoin, Boolberry, Dashcoin, Sumokoin etc..
+High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, DuckNote, Monero, QuazarCoin, Boolberry, Dashcoin, Sumokoi,n, Dero etc..
 Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 ## Recent changes
@@ -92,12 +92,10 @@ individual worker.
 * https://pool.sumokoin.com
 * https://pool.sumokoin.ch
 
-More pools can be found on [sumopools.com](https://www.sumopools.com)
-
 ## Usage
 
 Visit the usage guide here.
-[Visit the usage guide here](https://github.com/SadBatman/cryptonote-sumokoin-pool/blob/master/USAGE.md)
+[Visit the usage guide here](https://github.com/SadBatman/cryptonote-dero-pool/blob/master/USAGE.md)
 
 
 ## License
