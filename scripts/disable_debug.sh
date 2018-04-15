@@ -1,3 +1,3 @@
 #!/bin/bash
 
-DEBUG_COLORS=false DEBUG=-* pm2 reload proxy --update-env
+DEBUG_COLORS=false DEBUG=-* pm2 reload all --update-env
