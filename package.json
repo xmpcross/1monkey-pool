@@ -8,21 +8,21 @@
         "url": "https://github.com/fancoder/cryptonote-universal-pool.git"
     },
     "dependencies": {
-        "async": "^2.1.4",
+        "async": "^2.6.0",
+        "base58-native": "^0.1.4",
         "bignum": "^0.12.5",
-        "bluebird": "^3.4.7",
+        "bluebird": "^3.5.1",
         "bufferutil": "^1.3.0",
         "circular-buffer": "^1.0.2",
+        "cli-color": "^1.2.0",
         "crypto": "0.0.3",
+        "cryptonight-hashing": "git+ssh://git@bitbucket.org/coinshazbotnet/node-cryptonight-hashing.git",
+        "cryptonote-util": "git://github.com/Snipa22/node-cryptonote-util.git#xmr-Nan-2.0",
+        "dateformat": "^3.0.3",
+        "mailgun.js": "^2.0.1",
         "protocol-buffers": "^3.2.1",
         "range": "0.0.3",
-        "redis": "*",
-        "cli-color": "*",
-        "dateformat": "*",
-        "base58-native": "*",
-        "mailgun.js": "*",
-        "cryptonight-hashing": "git@bitbucket.org:coinshazbotnet/node-cryptonight-hashing.git",
-        "cryptonote-util": "git://github.com/Snipa22/node-cryptonote-util.git#xmr-Nan-2.0"
+        "redis": "^2.8.0"
     },
     "engines": {
         "node": ">=0.10"
