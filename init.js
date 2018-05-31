@@ -179,6 +179,22 @@ function spawnPoolWorkers(){
 
     var poolWorkers = {};
 
+    redisClient.on('pmessage', function(pattern, channel, message) {
+        //log('info', logSystem, 'Request on %s data %s', [channel, message]);
+        var msgType = channel.split(':')[1];
+        switch(msgType) {
+            case 'retarget':
+                var [r, d] = message.split(',');
+                Object.keys(cluster.workers).forEach(function(id) {
+                    if (cluster.workers[id].type === 'pool'){
+                        cluster.workers[id].send({type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)});
+                    }
+                });
+                break;
+        }
+    });
+    redisClient.psubscribe(config.coin + ':*', function (err, count) {});
+
     var createPoolWorker = function(forkId){
         var worker = cluster.fork({
             workerType: 'pool',
