@@ -184,6 +184,9 @@ function spawnPoolWorkers(){
         var poolMsg;
         var msgType = channel.split(':')[1];
         switch(msgType) {
+            case 'nextWallet':
+                poolMsg = {type: 'nextWallet'};
+                break;
             case 'setWallet':
                 poolMsg = {type: 'setWallet', wallet: message};
                 break;
