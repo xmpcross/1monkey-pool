@@ -181,16 +181,24 @@ function spawnPoolWorkers(){
 
     redisClient.on('pmessage', function(pattern, channel, message) {
         //log('info', logSystem, 'Request on %s data %s', [channel, message]);
+        var poolMsg;
         var msgType = channel.split(':')[1];
         switch(msgType) {
+            case 'setWallet':
+                poolMsg = {type: 'setWallet', wallet: message};
+                break;
             case 'retarget':
                 var [r, d] = message.split(',');
-                Object.keys(cluster.workers).forEach(function(id) {
-                    if (cluster.workers[id].type === 'pool'){
-                        cluster.workers[id].send({type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)});
-                    }
-                });
+                poolMsg = {type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)};
                 break;
+        }
+
+        if (poolMsg) {
+            Object.keys(cluster.workers).forEach(function(id) {
+                if (cluster.workers[id].type === 'pool'){
+                    cluster.workers[id].send(poolMsg);
+                }
+            });
         }
     });
     redisClient.psubscribe(config.coin + ':*', function (err, count) {});
@@ -210,10 +218,11 @@ function spawnPoolWorkers(){
             }, 2000);
         }).on('message', function(msg){
             switch(msg.type){
+                case 'setWallet':
                 case 'banIP':
                     Object.keys(cluster.workers).forEach(function(id) {
                         if (cluster.workers[id].type === 'pool'){
-                            cluster.workers[id].send({type: 'banIP', ip: msg.ip});
+                            cluster.workers[id].send(msg);
                         }
                     });
                     break;
