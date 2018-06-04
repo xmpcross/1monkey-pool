@@ -166,6 +166,15 @@ function spawnPoolWorkers(){
         return;
     }
 
+    var hasWalletPool = (typeof config.poolServer.wallets == 'object' && config.poolServer.wallets.constructor.name == 'Array' && config.poolServer.wallets.length);
+    var nextPoolWallet = function() {
+        if (!hasWalletPool) return config.poolServer.poolAddress;
+
+        var i = Math.floor(config.poolServer.wallets.length * Math.random());
+        return config.poolServer.wallets[i];
+    };
+
+    config.poolServer.poolAddress = nextPoolWallet();
 
     var numForks = (function(){
         if (!config.poolServer.clusterForks)
@@ -185,7 +194,7 @@ function spawnPoolWorkers(){
         var msgType = channel.split(':')[1];
         switch(msgType) {
             case 'nextWallet':
-                poolMsg = {type: 'nextWallet'};
+                poolMsg = {type: 'setWallet', wallet: nextPoolWallet()};
                 break;
             case 'setWallet':
                 poolMsg = {type: 'setWallet', wallet: message};
@@ -209,7 +218,8 @@ function spawnPoolWorkers(){
     var createPoolWorker = function(forkId){
         var worker = cluster.fork({
             workerType: 'pool',
-            forkId: forkId
+            forkId: forkId,
+            wallet: config.poolServer.poolAddress
         });
         worker.forkId = forkId;
         worker.type = 'pool';
