@@ -193,11 +193,13 @@ function spawnPoolWorkers(){
         var poolMsg;
         var msgType = channel.split(':')[1];
         switch(msgType) {
-            case 'nextWallet':
-                poolMsg = {type: 'setWallet', wallet: nextPoolWallet()};
-                break;
+            case 'refresh':
+                if (message == 'wallet') {
+                    poolMsg = {type: 'setWallet', data: nextPoolWallet()};
+                    break;
+                }
             case 'setWallet':
-                poolMsg = {type: 'setWallet', wallet: message};
+                poolMsg = {type: msgType, data: message};
                 break;
             case 'retarget':
                 var [r, d] = message.split(',');
