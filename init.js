@@ -170,11 +170,11 @@ function spawnPoolWorkers(){
     var nextPoolWallet = function() {
         if (!hasWalletPool) return config.poolServer.poolAddress;
 
-        var i = Math.floor(config.poolServer.wallets.length * Math.random());
+        var i = (config.poolServer.wallets.indexOf(poolWalletAddress) + 1) % config.poolServer.wallets.length;;
         return config.poolServer.wallets[i];
     };
 
-    config.poolServer.poolAddress = nextPoolWallet();
+    if (hasWalletPool) config.poolServer.poolAddress = config.poolServer.wallets[0];
 
     var numForks = (function(){
         if (!config.poolServer.clusterForks)
@@ -233,6 +233,16 @@ function spawnPoolWorkers(){
             }, 2000);
         }).on('message', function(msg){
             switch(msg.type){
+                case 'refresh':
+                    if (msg.data == 'wallet') {
+                        var m = {type: 'setWallet', data: nextPoolWallet()};
+                        Object.keys(cluster.workers).forEach(function(id) {
+                            if (cluster.workers[id].type === 'pool'){
+                                cluster.workers[id].send(m);
+                            }
+                        });
+                    }
+                    break;
                 case 'setWallet':
                 case 'banIP':
                     Object.keys(cluster.workers).forEach(function(id) {
