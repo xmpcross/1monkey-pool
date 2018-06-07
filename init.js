@@ -170,8 +170,9 @@ function spawnPoolWorkers(){
     var nextPoolWallet = function() {
         if (!hasWalletPool) return config.poolServer.poolAddress;
 
-        var i = (config.poolServer.wallets.indexOf(poolWalletAddress) + 1) % config.poolServer.wallets.length;;
-        return config.poolServer.wallets[i];
+        var i = (config.poolServer.wallets.indexOf(config.poolServer.poolAddress) + 1) % config.poolServer.wallets.length;;
+        config.poolServer.poolAddress = config.poolServer.wallets[i];
+        return config.poolServer.poolAddress;
     };
 
     if (hasWalletPool) config.poolServer.poolAddress = config.poolServer.wallets[0];
