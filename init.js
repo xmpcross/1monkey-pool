@@ -199,6 +199,7 @@ function spawnPoolWorkers(){
                     poolMsg = {type: 'setWallet', data: nextPoolWallet()};
                     break;
                 }
+            case 'setMinTemplateRefresh':
             case 'setWallet':
                 poolMsg = {type: msgType, data: message};
                 break;
