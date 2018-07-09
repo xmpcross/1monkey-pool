@@ -201,6 +201,7 @@ function spawnPoolWorkers(){
                 }
             case 'setRotateWalletEffort':
             case 'setMinTemplateRefresh':
+            case 'setExtraRandomBytes':
             case 'setWallet':
                 poolMsg = {type: msgType, data: message};
                 break;
