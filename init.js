@@ -3,6 +3,8 @@ var cluster = require('cluster');
 var os = require('os');
 
 var redis = require('redis');
+var crypto = require('crypto');
+global.globalInstanceId = crypto.randomBytes(4);
 
 
 require('./lib/configReader.js');
@@ -166,6 +168,8 @@ function spawnPoolWorkers(){
         return;
     }
 
+    var poolWorkers = {};
+
     var hasWalletPool = (typeof config.poolServer.wallets == 'object' && config.poolServer.wallets.constructor.name == 'Array' && config.poolServer.wallets.length);
     var nextPoolWallet = function() {
         if (!hasWalletPool) return config.poolServer.poolAddress;
@@ -187,28 +191,24 @@ function spawnPoolWorkers(){
         return config.poolServer.clusterForks;
     })();
 
-    var poolWorkers = {};
-
-    redisClient.on('pmessage', function(pattern, channel, message) {
-        //log('info', logSystem, 'Request on %s data %s', [channel, message]);
+    function poolMessageHandler(msg) {
         var poolMsg;
-        var msgType = channel.split(':')[1];
-        switch(msgType) {
+        switch(msg.type) {
             case 'refresh':
                 if (message == 'wallet') {
                     poolMsg = {type: 'setWallet', data: nextPoolWallet()};
                     break;
+                } else if (message = 'instanceId') {
+                    global.globalInstanceId = crypto.randomBytes(4);
+                    poolMsg = {type: 'setInstanceId', data: global.globalInstanceId};
+                    break;
                 }
-            case 'setRotateWalletEffort':
-            case 'setMinTemplateRefresh':
-            case 'setExtraRandomBytes':
-            case 'setWallet':
-                poolMsg = {type: msgType, data: message};
-                break;
             case 'retarget':
-                var [r, d] = message.split(',');
+                var [r, d] = msg.data.split(',');
                 poolMsg = {type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)};
                 break;
+            default:
+                poolMsg = msg;
         }
 
         if (poolMsg) {
@@ -218,6 +218,15 @@ function spawnPoolWorkers(){
                 }
             });
         }
+
+        return poolMsg;
+    }
+
+    redisClient.on('pmessage', function(pattern, channel, message) {
+        //log('info', logSystem, 'Request on %s data %s', [channel, message]);
+        var poolMsg;
+        var msgType = channel.split(':')[1];
+        messaageHandler({type: msgType, data: message});
     });
     redisClient.psubscribe(config.coin + ':*', function (err, count) {});
 
@@ -235,28 +244,7 @@ function spawnPoolWorkers(){
             setTimeout(function(){
                 createPoolWorker(forkId);
             }, 2000);
-        }).on('message', function(msg){
-            switch(msg.type){
-                case 'refresh':
-                    if (msg.data == 'wallet') {
-                        var m = {type: 'setWallet', data: nextPoolWallet()};
-                        Object.keys(cluster.workers).forEach(function(id) {
-                            if (cluster.workers[id].type === 'pool'){
-                                cluster.workers[id].send(m);
-                            }
-                        });
-                    }
-                    break;
-                case 'setWallet':
-                case 'banIP':
-                    Object.keys(cluster.workers).forEach(function(id) {
-                        if (cluster.workers[id].type === 'pool'){
-                            cluster.workers[id].send(msg);
-                        }
-                    });
-                    break;
-            }
-        });
+        }).on('message', poolMessageHandler);
     };
 
     var i = 1;
