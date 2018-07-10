@@ -1,18 +1,17 @@
+require('./lib/configReader.js');
+require('./lib/logger.js');
+
 var fs = require('fs');
 var cluster = require('cluster');
 var os = require('os');
-
 var redis = require('redis');
-var crypto = require('crypto');
-global.globalInstanceId = crypto.randomBytes(4);
 
-
-require('./lib/configReader.js');
-
-require('./lib/logger.js');
-
+global.utils = require('./lib/utils.js');
+global.apiInterfaces = require('./lib/apiInterfaces.js')(config.daemon, config.wallet, config.api);
+global.globalInstanceId = new Buffer('41383839', 'hex');
 
 var logSystem = 'master';
+
 global.redisClient = redis.createClient(config.redis.port, config.redis.host, {
     retry_strategy: function (options) {
         if (options.total_retry_time > 1000 * 60 * 30) {
@@ -191,24 +190,96 @@ function spawnPoolWorkers(){
         return config.poolServer.clusterForks;
     })();
 
-    function poolMessageHandler(msg) {
+    var rpcDaemonCache = {};
+    var rpcDaemonQueue = {};
+    var previousBlockHash = '';
+    var blockchainHeight = 0;
+
+    var sendBlockTemplate = function(worker, res) {
+        worker.send({
+            type: 'newBlockTemplate',
+            result: res.result,
+            error: res.error
+        });
+    };
+
+    var checkHash = function() {
+        apiInterfaces.rpcDaemon('on_getblockhash', [blockchainHeight - 1], function(e, res) {
+            if (e) {
+                log('error', logSystem, 'Error polling on_getblockhash %j', [e]);
+            } else if (res != previousBlockHash) {
+                rpcDaemonCache.getblocktemplate = {};
+                poolMessageHandler({type: 'jobRefresh'});
+            } else {
+                setTimeout(function(){checkHeight();}, config.poolServer.blockRefreshInterval);
+            }
+        });
+    }
+
+    var checkHeight = function() {
+        apiInterfaces.rpcDaemon('getblockcount', null, function(e, res) {
+            if (e) {
+                log('error', logSystem, 'Error polling getblockcount %j', [e]);
+            } else if (res.count != blockchainHeight) {
+                rpcDaemonCache.getblocktemplate = {};
+                poolMessageHandler({type: 'jobRefresh'});
+            } else {
+                checkHash();
+            }
+        });
+    };
+
+    var poolMessageHandler = function(msg) {
         var poolMsg;
         switch(msg.type) {
-            case 'refresh':
-                if (message == 'wallet') {
-                    poolMsg = {type: 'setWallet', data: nextPoolWallet()};
-                    break;
-                } else if (message = 'instanceId') {
-                    global.globalInstanceId = crypto.randomBytes(4);
-                    poolMsg = {type: 'setInstanceId', data: global.globalInstanceId};
-                    break;
-                }
             case 'retarget':
                 var [r, d] = msg.data.split(',');
                 poolMsg = {type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)};
                 break;
-            default:
+            case 'rpcDaemon':
+                if (msg.command == 'getblocktemplate') {
+                    var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString();
+                    if (rpcDaemonCache[msg.command] && rpcDaemonCache[msg.command][objKey]) {
+                        sendBlockTemplate(poolWorkers[msg.workerId], rpcDaemonCache[msg.command][objKey]);
+                    } else {
+                        rpcDaemonQueue[msg.command] = rpcDaemonQueue[msg.command] || {};
+                        rpcDaemonQueue[msg.command][objKey] = rpcDaemonQueue[msg.command][objKey] || [];
+                        rpcDaemonQueue[msg.command][objKey].push({workerId: msg.workerId});
+                        apiInterfaces.rpcDaemon(msg.command, msg.params, function(e, res) {
+                            rpcDaemonCache[msg.command] = rpcDaemonCache[msg.command] || {};
+                            rpcDaemonCache[msg.command][objKey] = {error: e, result: res};
+                            if (res) {
+                                blockchainHeight = res.height;
+                                previousBlockHash = res.prev_hash;
+                                setTimeout(function(){checkHeight();}, config.poolServer.blockRefreshInterval);
+                            }
+                            while (rpcDaemonQueue[msg.command][objKey].length) {
+                                var w = rpcDaemonQueue[msg.command][objKey].shift();
+                                sendBlockTemplate(poolWorkers[w.workerId], rpcDaemonCache[msg.command][objKey]);
+                            }
+
+                        });
+                    }
+                }
+                break;
+            case 'refresh':
+                if (msg.data == 'wallet') {
+                    rpcDaemonCache.getblocktemplate = {};
+                    poolMsg = {type: 'setWallet', data: nextPoolWallet()};
+                    break;
+                } else if (msg.data == 'instanceId') {
+                    global.globalInstanceId = utils.getRandom32bit();
+                    poolMsg = {type: 'setInstanceId', data: global.globalInstanceId.hexSlice()};
+                    break;
+                }
+            case 'setWallet':
+            case 'setMinTemplateRefresh':
+            case 'setRotateWalletEffort':
+            case 'setExtraRandomBytes':
+            case 'setInstanceId':
+            case 'jobRefresh':
                 poolMsg = msg;
+                break;
         }
 
         if (poolMsg) {
@@ -220,13 +291,13 @@ function spawnPoolWorkers(){
         }
 
         return poolMsg;
-    }
+    };
 
     redisClient.on('pmessage', function(pattern, channel, message) {
         //log('info', logSystem, 'Request on %s data %s', [channel, message]);
         var poolMsg;
         var msgType = channel.split(':')[1];
-        messaageHandler({type: msgType, data: message});
+        poolMessageHandler({type: msgType, data: message});
     });
     redisClient.psubscribe(config.coin + ':*', function (err, count) {});
 
