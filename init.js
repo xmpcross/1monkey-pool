@@ -190,10 +190,12 @@ function spawnPoolWorkers(){
         return config.poolServer.clusterForks;
     })();
 
+    var numForksStarted = 0;
     var rpcDaemonCache = {};
     var rpcDaemonQueue = {};
     var previousBlockHash = '';
     var blockchainHeight = 0;
+    var pollUpdates = false;
 
     var sendBlockTemplate = function(worker, res) {
         worker.send({
@@ -203,13 +205,18 @@ function spawnPoolWorkers(){
         });
     };
 
+    var triggerRefresh = function() {
+        rpcDaemonCache.getblocktemplate = {};
+        pollUpdates = false;
+        poolMessageHandler({type: 'jobRefresh'});
+    };
+
     var checkHash = function() {
         apiInterfaces.rpcDaemon('on_getblockhash', [blockchainHeight - 1], function(e, res) {
             if (e) {
                 log('error', logSystem, 'Error polling on_getblockhash %j', [e]);
             } else if (res != previousBlockHash) {
-                rpcDaemonCache.getblocktemplate = {};
-                poolMessageHandler({type: 'jobRefresh'});
+                triggerRefresh();
             } else {
                 setTimeout(function(){checkHeight();}, config.poolServer.blockRefreshInterval);
             }
@@ -221,10 +228,9 @@ function spawnPoolWorkers(){
             if (e) {
                 log('error', logSystem, 'Error polling getblockcount %j', [e]);
             } else if (res.count != blockchainHeight) {
-                rpcDaemonCache.getblocktemplate = {};
-                poolMessageHandler({type: 'jobRefresh'});
+                triggerRefresh();
             } else {
-                checkHash();
+                setTimeout(function(){checkHash();}, config.poolServer.blockRefreshInterval);
             }
         });
     };
@@ -232,10 +238,6 @@ function spawnPoolWorkers(){
     var poolMessageHandler = function(msg) {
         var poolMsg;
         switch(msg.type) {
-            case 'retarget':
-                var [r, d] = msg.data.split(',');
-                poolMsg = {type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)};
-                break;
             case 'rpcDaemon':
                 if (msg.command == 'getblocktemplate') {
                     var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString();
@@ -251,7 +253,10 @@ function spawnPoolWorkers(){
                             if (res) {
                                 blockchainHeight = res.height;
                                 previousBlockHash = res.prev_hash;
-                                setTimeout(function(){checkHeight();}, config.poolServer.blockRefreshInterval);
+                                if (!pollUpdates) {
+                                    pollUpdates = true;
+                                    setTimeout(function(){checkHeight();}, config.poolServer.blockRefreshInterval);
+                                }
                             }
                             while (rpcDaemonQueue[msg.command][objKey].length) {
                                 var w = rpcDaemonQueue[msg.command][objKey].shift();
@@ -262,9 +267,18 @@ function spawnPoolWorkers(){
                     }
                 }
                 break;
+            case 'forkStarted':
+                numForksStarted++;
+                if (numForksStarted === numForks){
+                    log('info', logSystem, 'Pool spawned on %d thread(s)', [numForks]);
+                }
+                break;
+            case 'retarget':
+                var [r, d] = msg.data.split(',');
+                poolMsg = {type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)};
+                break;
             case 'refresh':
                 if (msg.data == 'wallet') {
-                    rpcDaemonCache.getblocktemplate = {};
                     poolMsg = {type: 'setWallet', data: nextPoolWallet()};
                     break;
                 } else if (msg.data == 'instanceId') {
@@ -272,6 +286,8 @@ function spawnPoolWorkers(){
                     poolMsg = {type: 'setInstanceId', data: global.globalInstanceId.hexSlice()};
                     break;
                 }
+                rpcDaemonCache.getblocktemplate = {};
+                pollUpdates = false;
             case 'setWallet':
             case 'setMinTemplateRefresh':
             case 'setRotateWalletEffort':
@@ -318,15 +334,14 @@ function spawnPoolWorkers(){
         }).on('message', poolMessageHandler);
     };
 
-    var i = 1;
-    var spawnInterval = setInterval(function(){
-        createPoolWorker(i.toString());
+    var poolSpawn = function(i){
         i++;
-        if (i - 1 === numForks){
-            clearInterval(spawnInterval);
-            log('info', logSystem, 'Pool spawned on %d thread(s)', [numForks]);
+        createPoolWorker(i.toString());
+        if (i < numForks){
+            setTimeout(function(){poolSpawn(i);}, 100);
         }
-    }, 10);
+    };
+    poolSpawn(0);
 }
 
 function spawnBlockUnlocker(){
