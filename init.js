@@ -289,6 +289,7 @@ function spawnPoolWorkers(){
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
             case 'setWallet':
+            case 'setReserveSize':
             case 'setMinTemplateRefresh':
             case 'setRotateWalletEffort':
             case 'setExtraRandomBytes':
