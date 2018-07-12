@@ -277,6 +277,10 @@ function spawnPoolWorkers(){
                 var [r, d] = msg.data.split(',');
                 poolMsg = {type: 'forceRetarget', ratio: parseInt(r), diff: parseInt(d)};
                 break;
+            case 'nonce':
+                var [i, e, a] = msg.data.split(',');
+                cluster.workers[i].send({type: 'setNonce', extraNonce: e, additionalRand: a});
+                break;
             case 'refresh':
                 if (msg.data == 'wallet') {
                     poolMsg = {type: 'setWallet', data: nextPoolWallet()};
@@ -288,6 +292,7 @@ function spawnPoolWorkers(){
                 }
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
+            case 'highshare':
             case 'setWallet':
             case 'setReserveSize':
             case 'setMinTemplateRefresh':
