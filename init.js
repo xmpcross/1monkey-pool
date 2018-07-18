@@ -327,9 +327,11 @@ function spawnPoolWorkers(){
         var worker = cluster.fork({
             workerType: 'pool',
             forkId: forkId,
+            numForks: numForks,
             wallet: config.poolServer.poolAddress
         });
         worker.forkId = forkId;
+        worker.numForks = numForks;
         worker.type = 'pool';
         poolWorkers[forkId] = worker;
         worker.on('exit', function(code, signal){
