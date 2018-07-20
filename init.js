@@ -293,13 +293,15 @@ function spawnPoolWorkers(){
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
             case 'highshare':
+            case 'jobRefresh':
+            case 'promoteNonce':
             case 'setWallet':
             case 'setReserveSize':
             case 'setMinTemplateRefresh':
+            case 'setMinTemplatePromote':
             case 'setRotateWalletEffort':
             case 'setExtraRandomBytes':
             case 'setInstanceId':
-            case 'jobRefresh':
                 poolMsg = msg;
                 break;
         }
