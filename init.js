@@ -302,6 +302,7 @@ function spawnPoolWorkers(){
             case 'setRotateWalletEffort':
             case 'setExtraRandomBytes':
             case 'setInstanceId':
+            case 'poolMiner':
                 poolMsg = msg;
                 break;
         }
