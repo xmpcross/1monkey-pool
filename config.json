@@ -1,0 +1,204 @@
+{
+    "coin": "sumokoin",
+    "symbol": "SUMO",
+    "coinUnits": 1000000000,
+    "coinDifficultyTarget": 240,
+    "cnVariant": 13,
+    "cnBlobType": 0,
+
+    "includeHeight": true,
+
+    "logging": {
+        "files": {
+            "level": "debug",
+            "directory": "logs",
+            "singleFile": true,
+            "flushInterval": 1
+        },
+
+        "console": {
+            "level": "info",
+            "colors": true
+        }
+    },
+    "poolServer": {
+        "enabled": true,
+        "clusterForks": "auto",
+        "reserveSize": null,
+        "reserveOffset": 128,
+        "poolAddress": "",
+        "wallets": [
+            "Sumoo3xHQZ559XguSr4ar6GFobaV2Cc26VZtGF66jJVWdcnPc7ozneVKf13UsBf2XnFfvQqkaBBcdEKXQgG6oRaHQU5Eop4cyQM",
+            "Sumoo2MXG98WkW2Ye72q553behRKhcJAAJjWkey4DCJdX4c6eTJVALTQdtaifKe5igLZUYNMvGSvhNY6d7cJK3UW3TbTacAutrV",
+            "Sumoo1K3aWCCghx77DjmQKUSQH1vfouyji4cYK33PNFaJWmkVSwZ19wfBhDFyxj7Kccjp2h2u476MWa8cUVJdDvsRep7ZRecVTx"
+        ],
+        "allowedMinerAddressPrefixes": [ "18", "90", "251" ],
+        "blockRefreshInterval": 1000,
+        "minerTimeout": 900,
+        "nicehashDiff": 800000,
+        "blockTemplateRefresh": 3,
+        "blockTemplatePromote": 10,
+        "rotateWalletEffort": 3,
+        "ports": [
+            {
+                "port": 17750,
+                "difficulty": 50000,
+                "desc": "Low end hardware"
+            },
+            {
+                "port": 17075,
+                "difficulty": 75000,
+                "desc": "Mid range hardware"
+            },
+            {
+                "port": 17100,
+                "difficulty": 100000,
+                "desc": "High end hardware"
+            },
+            {
+                "port": 17150,
+                "difficulty": 150000,
+                "desc": "50K"
+            },
+            {
+                "port": 17200,
+                "difficulty": 200000,
+                "desc": "Mining Rig"
+            },
+            {
+                "port": 17800,
+                "difficulty": 800000,
+                "desc": "NiceHash"
+            }
+        ],
+        "varDiff": {
+            "minDiff": 50000,
+            "maxDiff": 3000000,
+            "targetTime": 100,
+            "retargetTime": 30,
+            "checkSettingsTime": 30,
+            "variancePercent": 30,
+            "maxJump": 30,
+            "forced": "off",
+            "enableTargetTimeVariance": "off"
+        },
+        "fixedDiff": {
+            "enabled": true,
+            "addressSeparator": "."
+        },
+        "shareTrust": {
+            "enabled": true,
+            "min": 0,
+            "stepDown": 50,
+            "threshold": 2,
+            "penalty": 10
+        },
+        "banning": {
+            "enabled": false,
+            "time": 600,
+            "invalidPercent": 25,
+            "checkThreshold": 30
+        },
+        "slushMining": {
+            "enabled": false,
+            "weight": 300,
+            "lastBlockCheckRate": 1
+        }
+    },
+    "payments": {
+        "enabled": false,
+        "interval": 3153600,
+        "maxAddresses": 10,
+        "mixin": 0,
+        "transferFee": 1,
+        "minPayment": 10000,
+        "denomination": 100
+    },
+    "blockUnlocker": {
+        "enabled": true,
+        "interval": 30,
+        "depth": 60,
+        "poolFee": 100,
+        "devDonation": 0.0,
+        "coreDevDonation": 0.0
+    },
+    "api": {
+        "enabled": true,
+        "hashrateWindow": 60,
+        "updateInterval": 3,
+        "port": 10017,
+        "blocks": 30,
+        "payments": 30,
+        "password": "VampyMonkeyHashing9"
+    },
+    "daemon": {
+        "host": "127.0.0.1",
+        "port": 19734
+        }, 
+    "wallet": { 
+        "host": "127.0.0.1", 
+        "port": 0
+        }, 
+    "redis": { 
+        "host": "127.0.0.1", 
+        "port": 6379, 
+        "auth": null 
+    },
+    "monitoring": {
+        "daemon": {
+            "checkInterval": 60,
+            "rpcMethod": "getblockcount"
+        },
+        "wallet": {
+            "checkInterval": 60,
+            "rpcMethod": "getbalance"
+        }
+    },
+    "charts": {
+        "pool": {
+            "hashrate": {
+                "enabled": true,
+                "updateInterval": 60,
+                "stepInterval": 1800,
+                "maximumPeriod": 86400
+            },
+            "workers": {
+                "enabled": true,
+                "updateInterval": 60,
+                "stepInterval": 1800,
+                "maximumPeriod": 86400
+            },
+            "difficulty": {
+                "enabled": true,
+                "updateInterval": 1800,
+                "stepInterval": 10800,
+                "maximumPeriod": 604800
+            },
+            "price": {
+                "enabled": true,
+                "updateInterval": 1800,
+                "stepInterval": 10800,
+                "maximumPeriod": 604800
+            },
+            "profit": {
+                "enabled": true,
+                "updateInterval": 1800,
+                "stepInterval": 10800,
+                "maximumPeriod": 604800
+            }
+        },
+        "user": {
+            "hashrate": {
+                "enabled": true,
+                "updateInterval": 180,
+                "stepInterval": 1800,
+                "maximumPeriod": 86400
+            },
+            "payments": {
+                "enabled": true
+            }
+        }
+    }
+}
+
+
