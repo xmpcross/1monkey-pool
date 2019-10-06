@@ -281,6 +281,16 @@ function spawnPoolWorkers(){
                 var [i, e, a] = msg.data.split(',');
                 cluster.workers[i].send({type: 'setNonce', extraNonce: e, additionalRand: a});
                 break;
+            case 'setReserveSize':
+                var sizes = msg.data.split(',');
+                var resizeSizeMappings = [];
+                if (sizes.length) {
+                    for (var i = 0; i < numForks; i++){
+                        resizeSizeMappings[i] = sizes[i % sizes.length];
+                    }
+                }
+                poolMsg = {type: 'setReserveSize', data: resizeSizeMappings};
+                break;
             case 'refresh':
                 if (msg.data == 'wallet') {
                     poolMsg = {type: 'setWallet', data: nextPoolWallet()};
@@ -289,6 +299,9 @@ function spawnPoolWorkers(){
                     global.globalInstanceId = utils.getRandom32bit();
                     poolMsg = {type: 'setInstanceId', data: global.globalInstanceId.hexSlice()};
                     break;
+                } else if (msg.data == 'target') {
+                    poolMsg = {type: 'retarget'};
+                    break;
                 }
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
@@ -296,7 +309,6 @@ function spawnPoolWorkers(){
             case 'jobRefresh':
             case 'promoteNonce':
             case 'setWallet':
-            case 'setReserveSize':
             case 'setMinTemplateRefresh':
             case 'setMinTemplatePromote':
             case 'setRotateWalletEffort':
