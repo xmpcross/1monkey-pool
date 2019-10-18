@@ -196,6 +196,16 @@ function spawnPoolWorkers(){
     var previousBlockHash = '';
     var blockchainHeight = 0;
     var pollUpdates = false;
+    var valRotateWalletPercent, numSharesForRotateWalletPercent;
+
+    var resetNumSharesForRotateWallet = function() {
+        numSharesForRotateWalletPercent = valRotateWalletPercent ? Math.floor(100*numForks/valRotateWalletPercent) : null;
+    };
+    var resetRotateWalletPercent = function() {
+        valRotateWalletPercent = typeof config.poolServer.rotateWalletPercent == 'number' ? config.poolServer.rotateWalletPercent : null;
+        resetNumSharesForRotateWallet();
+    }
+    resetRotateWalletPercent();
 
     var sendBlockTemplate = function(worker, res) {
         worker.send({
@@ -262,7 +272,7 @@ function spawnPoolWorkers(){
                                 var w = rpcDaemonQueue[msg.command][objKey].shift();
                                 sendBlockTemplate(poolWorkers[w.workerId], rpcDaemonCache[msg.command][objKey]);
                             }
-
+                            resetRotateWalletPercent();
                         });
                     }
                 }
@@ -272,6 +282,23 @@ function spawnPoolWorkers(){
                 if (numForksStarted === numForks){
                     log('info', logSystem, 'Pool spawned on %d thread(s)', [numForks]);
                 }
+                break;
+            case 'shareCounter':
+                if (valRotateWalletPercent) {
+                    numSharesForRotateWalletPercent += (Math.floor(parseInt(msg.sharePc)*0.1) - 1);
+                    valRotateWalletPercent = Math.round(100*numForks/numSharesForRotateWalletPercent);
+                    log('debug', 'pool', 'Wallet rotate: %d% shares: %d', [valRotateWalletPercent, numSharesForRotateWalletPercent]);
+
+                    if (hasWalletPool && parseInt(Math.floor(Math.random() * 100)) < parseInt(valRotateWalletPercent)) {
+                        resetRotateWalletPercent();
+                        poolMsg = {type: 'setWallet', data: nextPoolWallet()};
+                    }
+                }
+                break;
+            case 'setRotateWalletPercent':
+                config.poolServer.rotateWalletPercent = valRotateWalletPercent = msg.data == 'null' ? null : parseInt(msg.data);
+                resetNumSharesForRotateWallet();
+                log('info', logSystem, 'valRotateWalletPercent set to %s', [valRotateWalletPercent == null ? 'null' : valRotateWalletPercent.toString() + '%']);
                 break;
             case 'retarget':
                 var [r, d] = msg.data.split(',');
