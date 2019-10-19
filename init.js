@@ -331,7 +331,11 @@ function spawnPoolWorkers(){
                 } else if (msg.data == 'target') {
                     poolMsg = {type: 'retarget'};
                     break;
+                } else if (msg.data == 'random') {
+                    poolMsg = {type: 'randomizeNonce'};
+                    break;
                 }
+
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
             case 'highshare':
