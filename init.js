@@ -274,7 +274,6 @@ function spawnPoolWorkers(){
                                 var w = rpcDaemonQueue[msg.command][objKey].shift();
                                 sendBlockTemplate(poolWorkers[w.workerId], rpcDaemonCache[msg.command][objKey]);
                             }
-                            resetRotateWalletPercent();
                         });
                     }
                 }
@@ -344,6 +343,7 @@ function spawnPoolWorkers(){
             case 'setRotateWalletEffort':
             case 'setExtraRandomBytes':
             case 'setInstanceId':
+            case 'setCommonNonce':
             case 'poolMiner':
                 poolMsg = msg;
                 break;
