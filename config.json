@@ -30,18 +30,22 @@
         "wallets": [
             "Sumoo3xHQZ559XguSr4ar6GFobaV2Cc26VZtGF66jJVWdcnPc7ozneVKf13UsBf2XnFfvQqkaBBcdEKXQgG6oRaHQU5Eop4cyQM",
             "Sumoo2MXG98WkW2Ye72q553behRKhcJAAJjWkey4DCJdX4c6eTJVALTQdtaifKe5igLZUYNMvGSvhNY6d7cJK3UW3TbTacAutrV",
-            "Sumoo1K3aWCCghx77DjmQKUSQH1vfouyji4cYK33PNFaJWmkVSwZ19wfBhDFyxj7Kccjp2h2u476MWa8cUVJdDvsRep7ZRecVTx"
+            "Sumoo1K3aWCCghx77DjmQKUSQH1vfouyji4cYK33PNFaJWmkVSwZ19wfBhDFyxj7Kccjp2h2u476MWa8cUVJdDvsRep7ZRecVTx",
+            "Sumoo2xH35eYtz1oLZE2o68qaRzWbiqCRY3qF8h8PEc7Xg5NceGPmzTNbRgVvqPKuYCPLPX9DoLZjU3xUYNWPfdeCN2ZP9QGueN",
+            "Sumoo15cagvYbB8K4o1Z66C3fQqVyRgfgUiAHDW9DrydQhCLWHvhAX86Xctuuhb6riA2tRgE2Bpu5Ft4W63WmQph7cZBbBTruQK",
+            "SumonzxHRiMU2hTnWB4tnM6nrvFeBUtTagZHiaAdQqKkBRf7NZYRwKf5jKpjwv9Z4mYxVUbJNhRAcNX6q38PnTVnSYfFDbPhGHs"
         ],
         "allowedMinerAddressPrefixes": [ "18", "90", "251" ],
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
         "nicehashDiff": 800000,
         "blockTemplateRefresh": 3,
-        "blockTemplatePromote": 10,
+        "blockTemplatePromote": null,
         "rotateWalletEffort": 3,
+        "rotateWalletPercent": 5,
         "ports": [
             {
-                "port": 17750,
+                "port": 17050,
                 "difficulty": 50000,
                 "desc": "Low end hardware"
             },
@@ -73,8 +77,8 @@
         ],
         "varDiff": {
             "minDiff": 50000,
-            "maxDiff": 3000000,
-            "targetTime": 100,
+            "maxDiff": 200000,
+            "targetTime": 30,
             "retargetTime": 30,
             "checkSettingsTime": 30,
             "variancePercent": 30,
