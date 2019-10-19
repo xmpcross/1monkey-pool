@@ -199,11 +199,13 @@ function spawnPoolWorkers(){
     var valRotateWalletPercent, numSharesForRotateWalletPercent;
 
     var resetNumSharesForRotateWallet = function() {
-        numSharesForRotateWalletPercent = valRotateWalletPercent ? Math.floor(100*numForks/valRotateWalletPercent) : null;
+        numSharesForRotateWalletPercent = valRotateWalletPercent ? Math.floor(100*numForksStarted/valRotateWalletPercent) : null;
+        return numSharesForRotateWalletPercent;
     };
     var resetRotateWalletPercent = function() {
-        valRotateWalletPercent = typeof config.poolServer.rotateWalletPercent == 'number' ? config.poolServer.rotateWalletPercent : null;
+        valRotateWalletPercent = (typeof config.poolServer.rotateWalletPercent == 'number') ? config.poolServer.rotateWalletPercent : null;
         resetNumSharesForRotateWallet();
+        return valRotateWalletPercent;
     }
     resetRotateWalletPercent();
 
@@ -282,14 +284,15 @@ function spawnPoolWorkers(){
                 if (numForksStarted === numForks){
                     log('info', logSystem, 'Pool spawned on %d thread(s)', [numForks]);
                 }
+                resetNumSharesForRotateWallet();
                 break;
             case 'shareCounter':
                 if (valRotateWalletPercent) {
                     numSharesForRotateWalletPercent += (Math.floor(parseInt(msg.sharePc)*0.1) - 1);
-                    valRotateWalletPercent = Math.round(100*numForks/numSharesForRotateWalletPercent);
+                    valRotateWalletPercent = Math.round(100*numForksStarted/numSharesForRotateWalletPercent);
                     log('debug', 'pool', 'Wallet rotate: %d% shares: %d', [valRotateWalletPercent, numSharesForRotateWalletPercent]);
 
-                    if (hasWalletPool && parseInt(Math.floor(Math.random() * 100)) < parseInt(valRotateWalletPercent)) {
+                    if (hasWalletPool && (parseInt(Math.floor(Math.random()*100*numForksStarted)) < parseInt(valRotateWalletPercent))) {
                         resetRotateWalletPercent();
                         poolMsg = {type: 'setWallet', data: nextPoolWallet()};
                     }
