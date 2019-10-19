@@ -23,10 +23,10 @@
     },
     "poolServer": {
         "enabled": true,
-        "clusterForks": "auto",
+        "clusterForks": 8,
         "reserveSize": null,
-        "reserveOffset": 128,
-        "poolAddress": "",
+        "reserveOffset": null,
+        "poolAddress": "Sumoo3xHQZ559XguSr4ar6GFobaV2Cc26VZtGF66jJVWdcnPc7ozneVKf13UsBf2XnFfvQqkaBBcdEKXQgG6oRaHQU5Eop4cyQM",
         "wallets": [
             "Sumoo3xHQZ559XguSr4ar6GFobaV2Cc26VZtGF66jJVWdcnPc7ozneVKf13UsBf2XnFfvQqkaBBcdEKXQgG6oRaHQU5Eop4cyQM",
             "Sumoo2MXG98WkW2Ye72q553behRKhcJAAJjWkey4DCJdX4c6eTJVALTQdtaifKe5igLZUYNMvGSvhNY6d7cJK3UW3TbTacAutrV",
@@ -39,10 +39,10 @@
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
         "nicehashDiff": 800000,
-        "blockTemplateRefresh": 3,
+        "blockTemplateRefresh": null,
         "blockTemplatePromote": null,
-        "rotateWalletEffort": 3,
-        "rotateWalletPercent": 5,
+        "rotateWalletEffort": null,
+        "rotateWalletPercent": 0,
         "ports": [
             {
                 "port": 17050,
@@ -77,9 +77,9 @@
         ],
         "varDiff": {
             "minDiff": 50000,
-            "maxDiff": 200000,
-            "targetTime": 30,
-            "retargetTime": 30,
+            "maxDiff": 2000000,
+            "targetTime": 120,
+            "retargetTime": 60,
             "checkSettingsTime": 30,
             "variancePercent": 30,
             "maxJump": 30,
