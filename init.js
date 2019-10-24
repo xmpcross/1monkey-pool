@@ -196,6 +196,8 @@ function spawnPoolWorkers(){
     var previousBlockHash = '';
     var blockchainHeight = 0;
     var pollUpdates = false;
+    var rotateCommonNonce = false;
+    var totalSharePercentage = 0, totalNumShares = 0;
     var valRotateWalletPercent, numSharesForRotateWalletPercent;
 
     var resetNumSharesForRotateWallet = function() {
@@ -274,6 +276,7 @@ function spawnPoolWorkers(){
                                 var w = rpcDaemonQueue[msg.command][objKey].shift();
                                 sendBlockTemplate(poolWorkers[w.workerId], rpcDaemonCache[msg.command][objKey]);
                             }
+                            totalSharePercentage = 0, totalNumShares = 0;
                         });
                     }
                 }
@@ -285,6 +288,10 @@ function spawnPoolWorkers(){
                 }
                 resetNumSharesForRotateWallet();
                 break;
+			case 'setRotateCommonNonce':
+				rotateCommonNonce = !rotateCommonNonce;
+                log('debug', 'pool', 'rotateCommonNonce: %s', [rotateCommonNonce ? 'on' : 'off']);
+				break;
             case 'shareCounter':
                 if (valRotateWalletPercent) {
                     numSharesForRotateWalletPercent += (Math.floor(parseInt(msg.sharePc)*0.1) - 1);
@@ -295,6 +302,21 @@ function spawnPoolWorkers(){
                         resetRotateWalletPercent();
                         poolMsg = {type: 'setWallet', data: nextPoolWallet()};
                     }
+                }
+
+                totalNumShares++;
+                totalSharePercentage += msg.sharePc;
+                log('debug', 'pool', 'Share Counter: %s% shares: %d', [totalSharePercentage.toFixed(2), totalNumShares]);
+
+                if (rotateCommonNonce && !poolMsg && totalNumShares > 40 && totalNumShares % 10 == 0 && totalNumShares > totalSharePercentage) {
+					var newNonce = 'ef63' + utils.getRandomBytes(2).hexSlice();
+					Object.keys(cluster.workers).forEach(function(id) {
+						if (cluster.workers[id].type === 'pool'){
+							cluster.workers[id].send({type: 'setCommonNonce', data: newNonce});
+						}
+					});
+                    totalSharePercentage = 0, totalNumShares = 0;
+                    poolMsg = {type: 'refresh'};
                 }
                 break;
             case 'setRotateWalletPercent':
