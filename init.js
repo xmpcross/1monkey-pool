@@ -21,10 +21,10 @@ global.redisClient = redis.createClient(config.redis.port, config.redis.host, {
         }
         if (options.attempt > 10) {
             // End reconnecting with built in error
-						log('error', logSystem, 'Reddis client exceeded max retries');
+                        log('error', logSystem, 'Reddis client exceeded max retries');
             return undefined;
         }
-				log('error', logSystem, 'Reddis client needs to retry (attempt: %d)', [options.attempt]);
+                log('error', logSystem, 'Reddis client needs to retry (attempt: %d)', [options.attempt]);
         // Reconnect after this many seconds.
         return options.attempt * 1000;
     }
@@ -197,6 +197,7 @@ function spawnPoolWorkers(){
     var blockchainHeight = 0;
     var pollUpdates = false;
     var rotateCommonNonce = false;
+    var shareBlockTemplate = false;
     var totalSharePercentage = 0, totalNumShares = 0;
     var valRotateWalletPercent, numSharesForRotateWalletPercent;
 
@@ -254,7 +255,7 @@ function spawnPoolWorkers(){
         switch(msg.type) {
             case 'rpcDaemon':
                 if (msg.command == 'getblocktemplate') {
-                    var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString();
+                    var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString() + (shareBlockTemplate ? '' : msg.workerId);
                     if (rpcDaemonCache[msg.command] && rpcDaemonCache[msg.command][objKey]) {
                         sendBlockTemplate(poolWorkers[msg.workerId], rpcDaemonCache[msg.command][objKey]);
                     } else {
@@ -288,10 +289,14 @@ function spawnPoolWorkers(){
                 }
                 resetNumSharesForRotateWallet();
                 break;
-			case 'setRotateCommonNonce':
-				rotateCommonNonce = !rotateCommonNonce;
+            case 'setRotateCommonNonce':
+                rotateCommonNonce = !rotateCommonNonce;
                 log('debug', 'pool', 'rotateCommonNonce: %s', [rotateCommonNonce ? 'on' : 'off']);
-				break;
+                break;
+            case 'setShareBlockTemplate':
+                shareBlockTemplate = !shareBlockTemplate;
+                log('debug', 'pool', 'shareBlockTemplate: %s', [shareBlockTemplate ? 'on' : 'off']);
+                break;
             case 'shareCounter':
                 if (valRotateWalletPercent) {
                     numSharesForRotateWalletPercent += (Math.floor(parseInt(msg.sharePc)*0.1) - 1);
@@ -309,12 +314,12 @@ function spawnPoolWorkers(){
                 log('debug', 'pool', 'Share Counter: %s% shares: %d', [totalSharePercentage.toFixed(2), totalNumShares]);
 
                 if (rotateCommonNonce && !poolMsg && totalNumShares > 40 && totalNumShares % 10 == 0 && totalNumShares > totalSharePercentage) {
-					var newNonce = 'ef63' + utils.getRandomBytes(2).hexSlice();
-					Object.keys(cluster.workers).forEach(function(id) {
-						if (cluster.workers[id].type === 'pool'){
-							cluster.workers[id].send({type: 'setCommonNonce', data: newNonce});
-						}
-					});
+                    var newNonce = 'ef63' + utils.getRandomBytes(2).hexSlice();
+                    Object.keys(cluster.workers).forEach(function(id) {
+                        if (cluster.workers[id].type === 'pool'){
+                            cluster.workers[id].send({type: 'setCommonNonce', data: newNonce});
+                        }
+                    });
                     totalSharePercentage = 0, totalNumShares = 0;
                     poolMsg = {type: 'refresh'};
                 }
