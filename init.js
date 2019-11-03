@@ -333,6 +333,10 @@ function spawnPoolWorkers(){
                 var [i, e, a] = msg.data.split(',');
                 cluster.workers[i].send({type: 'setNonce', extraNonce: e, additionalRand: a});
                 break;
+            case 'nonceOffset':
+                var [c, e] = msg.data.split(',');
+                poolMsg = {type: 'setNonceOffset', commonNonceOffset: c, extraNonceOffset: e};
+                break;
             case 'setReserveSize':
                 var sizes = msg.data.split(',');
                 var resizeSizeMappings = [];
@@ -348,7 +352,7 @@ function spawnPoolWorkers(){
                 log('info', logSystem, 'globalShareBlockTemplate: %s', [global.globalShareBlockTemplate ? 'on' : 'off']);
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
-                poolMsg = {type: 'setCommonNonce', shareBlockTemplate: global.globalShareBlockTemplate};
+                poolMsg = {type: 'setCommonNonce', shareBlockTemplate: global.globalShareBlockTemplate, data: msg.data};
                 break;
             case 'refresh':
                 if (msg.data == 'wallet') {
