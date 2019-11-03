@@ -9,6 +9,7 @@ var redis = require('redis');
 global.utils = require('./lib/utils.js');
 global.apiInterfaces = require('./lib/apiInterfaces.js')(config.daemon, config.wallet, config.api);
 global.globalInstanceId = new Buffer('41383839', 'hex');
+global.globalShareBlockTemplate = false;
 
 var logSystem = 'master';
 
@@ -197,7 +198,6 @@ function spawnPoolWorkers(){
     var blockchainHeight = 0;
     var pollUpdates = false;
     var rotateCommonNonce = false;
-    var shareBlockTemplate = false;
     var totalSharePercentage = 0, totalNumShares = 0;
     var valRotateWalletPercent, numSharesForRotateWalletPercent;
 
@@ -256,7 +256,6 @@ function spawnPoolWorkers(){
             case 'rpcDaemon':
                 if (msg.command == 'getblocktemplate') {
                     var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString();
-                    if (shareBlockTemplate == false) objKey += '_' + msg.workerId.toString();
                     if (rpcDaemonCache[msg.command] && rpcDaemonCache[msg.command][objKey]) {
                         sendBlockTemplate(poolWorkers[msg.workerId], rpcDaemonCache[msg.command][objKey]);
                     } else {
@@ -345,9 +344,11 @@ function spawnPoolWorkers(){
                 poolMsg = {type: 'setReserveSize', data: resizeSizeMappings};
                 break;
             case 'setShareBlockTemplate':
-                shareBlockTemplate = !shareBlockTemplate;
-                log('debug', 'pool', 'shareBlockTemplate: %s', [shareBlockTemplate ? 'on' : 'off']);
-                poolMsg = {type: 'setShareBlockTemplate'};
+                global.globalShareBlockTemplate = global.globalShareBlockTemplate ? false : true;
+                log('info', logSystem, 'globalShareBlockTemplate: %s', [global.globalShareBlockTemplate ? 'on' : 'off']);
+                rpcDaemonCache.getblocktemplate = {};
+                pollUpdates = false;
+                poolMsg = {type: 'setCommonNonce', shareBlockTemplate: global.globalShareBlockTemplate};
                 break;
             case 'refresh':
                 if (msg.data == 'wallet') {
