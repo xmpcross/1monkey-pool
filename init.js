@@ -255,7 +255,8 @@ function spawnPoolWorkers(){
         switch(msg.type) {
             case 'rpcDaemon':
                 if (msg.command == 'getblocktemplate') {
-                    var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString() + (shareBlockTemplate ? '' : msg.workerId);
+                    var objKey = msg.params.wallet_address + '_' + msg.params.reserve_size.toString();
+                    if (shareBlockTemplate == false) objKey += '_' + msg.workerId.toString();
                     if (rpcDaemonCache[msg.command] && rpcDaemonCache[msg.command][objKey]) {
                         sendBlockTemplate(poolWorkers[msg.workerId], rpcDaemonCache[msg.command][objKey]);
                     } else {
@@ -292,10 +293,6 @@ function spawnPoolWorkers(){
             case 'setRotateCommonNonce':
                 rotateCommonNonce = !rotateCommonNonce;
                 log('debug', 'pool', 'rotateCommonNonce: %s', [rotateCommonNonce ? 'on' : 'off']);
-                break;
-            case 'setShareBlockTemplate':
-                shareBlockTemplate = !shareBlockTemplate;
-                log('debug', 'pool', 'shareBlockTemplate: %s', [shareBlockTemplate ? 'on' : 'off']);
                 break;
             case 'shareCounter':
                 if (valRotateWalletPercent) {
@@ -346,6 +343,11 @@ function spawnPoolWorkers(){
                     }
                 }
                 poolMsg = {type: 'setReserveSize', data: resizeSizeMappings};
+                break;
+            case 'setShareBlockTemplate':
+                shareBlockTemplate = !shareBlockTemplate;
+                log('debug', 'pool', 'shareBlockTemplate: %s', [shareBlockTemplate ? 'on' : 'off']);
+                poolMsg = {type: 'setShareBlockTemplate'};
                 break;
             case 'refresh':
                 if (msg.data == 'wallet') {
