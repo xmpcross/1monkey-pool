@@ -10,6 +10,7 @@ global.utils = require('./lib/utils.js');
 global.apiInterfaces = require('./lib/apiInterfaces.js')(config.daemon, config.wallet, config.api);
 global.globalInstanceId = new Buffer('41383839', 'hex');
 global.globalShareBlockTemplate = false;
+global.poolMode = 'default';
 
 var logSystem = 'master';
 
@@ -353,6 +354,18 @@ function spawnPoolWorkers(){
                 rpcDaemonCache.getblocktemplate = {};
                 pollUpdates = false;
                 poolMsg = {type: 'setCommonNonce', shareBlockTemplate: global.globalShareBlockTemplate, data: msg.data};
+                break;
+            case 'poolMode':
+                var currPoolMode = global.poolMode;
+                if (msg.data && msg.data.toLowerCase() == 'xmrnodeproxy') {
+                    global.poolMode = 'xmrnodeproxy';
+                } else {
+                    global.poolMode = 'default';
+                }
+
+                if (global.poolMode != currPoolMode) {
+                    poolMsg = {type: 'setPoolMode', mode: global.poolMode};
+                }
                 break;
             case 'refresh':
                 if (msg.data == 'wallet') {
