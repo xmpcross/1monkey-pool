@@ -1,12 +1,14 @@
 {
-    "coin": "sumokoin",
-    "symbol": "SUMO",
-    "coinUnits": 1000000000,
-    "coinDifficultyTarget": 240,
-    "cnVariant": 13,
-    "cnBlobType": 0,
+    "coin": "monero",
+    "symbol": "XMR",
+    "cnVariantBlock": 1546000,
+    "coinUnits": 100000000000,
+    "coinDifficultyTarget": 120,
 
-    "includeHeight": true,
+    "cnAlgo": "randomx",
+    "cnVariant": 0,
+    "cnBlobType": 0,
+    "includeHeight": false,
 
     "logging": {
         "files": {
@@ -23,66 +25,62 @@
     },
     "poolServer": {
         "enabled": true,
-        "clusterForks": 8,
+        "clusterForks": "auto",
         "reserveSize": null,
         "reserveOffset": null,
-        "poolAddress": "Sumoo3xHQZ559XguSr4ar6GFobaV2Cc26VZtGF66jJVWdcnPc7ozneVKf13UsBf2XnFfvQqkaBBcdEKXQgG6oRaHQU5Eop4cyQM",
+        "commonNonce_17": "",
+        "poolAddress": "",
         "wallets": [
-            "Sumoo3xHQZ559XguSr4ar6GFobaV2Cc26VZtGF66jJVWdcnPc7ozneVKf13UsBf2XnFfvQqkaBBcdEKXQgG6oRaHQU5Eop4cyQM",
-            "Sumoo2MXG98WkW2Ye72q553behRKhcJAAJjWkey4DCJdX4c6eTJVALTQdtaifKe5igLZUYNMvGSvhNY6d7cJK3UW3TbTacAutrV",
-            "Sumoo1K3aWCCghx77DjmQKUSQH1vfouyji4cYK33PNFaJWmkVSwZ19wfBhDFyxj7Kccjp2h2u476MWa8cUVJdDvsRep7ZRecVTx",
-            "Sumoo2xH35eYtz1oLZE2o68qaRzWbiqCRY3qF8h8PEc7Xg5NceGPmzTNbRgVvqPKuYCPLPX9DoLZjU3xUYNWPfdeCN2ZP9QGueN",
-            "Sumoo15cagvYbB8K4o1Z66C3fQqVyRgfgUiAHDW9DrydQhCLWHvhAX86Xctuuhb6riA2tRgE2Bpu5Ft4W63WmQph7cZBbBTruQK",
-            "SumonzxHRiMU2hTnWB4tnM6nrvFeBUtTagZHiaAdQqKkBRf7NZYRwKf5jKpjwv9Z4mYxVUbJNhRAcNX6q38PnTVnSYfFDbPhGHs"
+            "48MhgMhgPd93R9KaJsm1CPSFgmsTKMes7Q25pZPATo4cBwiHAK3eZ2VfpSqNrBkmaCFPwHRexMWWzFfEspdY9b1tSqxd5Yh",
+            "47wY1mtxXJrigSFhpFocKMA6NCrHWuL3KDvJbXSCy7su17DkK63vPyLPCmokxnzA93ifiEtNePpe84DyPQtYh6ZdQxZksyb"
         ],
         "allowedMinerAddressPrefixes": [ "18", "90", "251" ],
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
         "nicehashDiff": 800000,
-        "blockTemplateRefresh": null,
-        "blockTemplatePromote": null,
-        "rotateWalletEffort": null,
-        "rotateWalletPercent": 0,
+        "blockTemplateRefresh": 2,
+        "blockTemplatePromote": 20,
+        "rotateWalletEffort": 2,
         "ports": [
             {
-                "port": 17050,
-                "difficulty": 50000,
+                "port": 11050,
+                "difficulty": 100,
                 "desc": "Low end hardware"
             },
             {
-                "port": 17075,
+                "port": 11075,
                 "difficulty": 75000,
                 "desc": "Mid range hardware"
             },
             {
-                "port": 17100,
+                "port": 11100,
                 "difficulty": 100000,
                 "desc": "High end hardware"
             },
             {
-                "port": 17150,
+                "port": 11150,
                 "difficulty": 150000,
                 "desc": "50K"
             },
             {
-                "port": 17200,
+                "port": 11200,
                 "difficulty": 200000,
                 "desc": "Mining Rig"
             },
             {
-                "port": 17800,
+                "port": 11800,
                 "difficulty": 800000,
-                "desc": "NiceHash"
+                "desc": "Cloud Mining"
             }
         ],
         "varDiff": {
-            "minDiff": 50000,
+            "minDiff": 100,
             "maxDiff": 2000000,
-            "targetTime": 120,
-            "retargetTime": 60,
+            "targetTime": 100,
+            "retargetTime": 30,
             "checkSettingsTime": 30,
             "variancePercent": 30,
-            "maxJump": 30,
+            "maxJump": 100,
             "forced": "off",
             "enableTargetTimeVariance": "off"
         },
@@ -130,14 +128,14 @@
         "enabled": true,
         "hashrateWindow": 60,
         "updateInterval": 3,
-        "port": 10017,
+        "port": 10011,
         "blocks": 30,
         "payments": 30,
         "password": "VampyMonkeyHashing9"
     },
     "daemon": {
-        "host": "127.0.0.1",
-        "port": 19734
+        "host": "node.xmr.to",
+        "port": 18081
         }, 
     "wallet": { 
         "host": "127.0.0.1", 
@@ -204,5 +202,8 @@
         }
     }
 }
+
+
+
 
 
