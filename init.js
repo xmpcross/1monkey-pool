@@ -368,7 +368,13 @@ function spawnPoolWorkers(){
                 }
                 break;
             case 'refresh':
-                if (msg.data == 'wallet') {
+                if (msg.data == 'minerjob') {
+                    poolMsg = {type: 'minerGetJob'};
+                    break;
+                } else if (msg.data == 'minerdiff') {
+                    poolMsg = {type: 'minerResetDiff'};
+                    break;
+                } else if (msg.data == 'wallet') {
                     poolMsg = {type: 'setWallet', data: nextPoolWallet()};
                     break;
                 } else if (msg.data == 'instanceId') {
