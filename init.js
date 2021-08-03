@@ -8,12 +8,13 @@ var redis = require('redis');
 
 global.utils = require('./lib/utils.js');
 global.apiInterfaces = require('./lib/apiInterfaces.js')(config.daemon, config.wallet, config.api);
-global.globalInstanceId = new Buffer('41383839', 'hex');
+global.globalInstanceId = new Buffer.from('41383839', 'hex');
 global.globalShareBlockTemplate = false;
 global.poolMode = 'default';
 
 var logSystem = 'master';
 
+var redisDB = (typeof config.redis.db !== 'undefined' && parseInt(config.redis.db) > 0) ? parseInt(config.redis.db) : 0;
 global.redisClient = redis.createClient(config.redis.port, config.redis.host, {
     retry_strategy: function (options) {
         if (options.total_retry_time > 1000 * 60 * 30) {
@@ -29,7 +30,9 @@ global.redisClient = redis.createClient(config.redis.port, config.redis.host, {
                 log('error', logSystem, 'Reddis client needs to retry (attempt: %d)', [options.attempt]);
         // Reconnect after this many seconds.
         return options.attempt * 1000;
-    }
+    },
+    db: redisDB,
+    auth_pass: config.redis.auth
 });
 
 
