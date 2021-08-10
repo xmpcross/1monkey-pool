@@ -27,60 +27,57 @@
         "enabled": true,
         "clusterForks": "auto",
         "reserveSize": null,
-        "reserveOffset": null,
+        "reserveOffset": 130,
         "commonNonce_17": "",
         "poolAddress": "",
         "wallets": [
-            "48MhgMhgPd93R9KaJsm1CPSFgmsTKMes7Q25pZPATo4cBwiHAK3eZ2VfpSqNrBkmaCFPwHRexMWWzFfEspdY9b1tSqxd5Yh",
-            "47wY1mtxXJrigSFhpFocKMA6NCrHWuL3KDvJbXSCy7su17DkK63vPyLPCmokxnzA93ifiEtNePpe84DyPQtYh6ZdQxZksyb"
+            "48AiRH7u5YcXeLaPRXhoG1XwaXvyToQ5NcCahxWyot976Gto5eNwv79Xd1HKbgb6jUZvCFxnsUU5NYVmi48NZooHNgJvXgH",
+            "44SMyCxQhyrJsNFJL5p2nAVAx1tcq3UL9hEztWeSSQerQY22i7jcVgD6qnLiN3oNfVFQF58d1MGD7d3XqZWZoWbzCvP5CjU",
+	   "47siQcsd59o6tj8WvkKJSDbb5DhrG3iHnYxWvipuQZS7CdQ4GmyCyuggf71mg2yo8HSH6xCsoQzdtZKnPw3xXXCcP7Pca6G",
+	   "4ARHXMzYSWvdQj3mixwxgZ8E4XrbC8pmUE7k5D1kWB8jL74sXLf4rDYPSDtCdAFt6kJh4mAdesebZZR8hxsMVJDrRkFC8NB"
         ],
         "allowedMinerAddressPrefixes": [ "18", "90", "251" ],
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
-        "nicehashDiff": 800000,
+        "nicehashDiff": 270000,
         "blockTemplateRefresh": 2,
         "blockTemplatePromote": 20,
         "rotateWalletEffort": 2,
         "ports": [
             {
-                "port": 11050,
-                "difficulty": 100,
+                "port": 8881,
+                "difficulty": 10000,
                 "desc": "Low end hardware"
             },
             {
-                "port": 11075,
-                "difficulty": 75000,
+                "port": 8882,
+                "difficulty": 25000,
                 "desc": "Mid range hardware"
             },
             {
-                "port": 11100,
-                "difficulty": 100000,
+                "port": 8883,
+                "difficulty": 50000,
                 "desc": "High end hardware"
             },
             {
-                "port": 11150,
-                "difficulty": 150000,
+                "port": 8884,
+                "difficulty": 100000,
                 "desc": "50K"
             },
             {
-                "port": 11200,
-                "difficulty": 200000,
+                "port": 8885,
+                "difficulty": 265000,
                 "desc": "Mining Rig"
-            },
-            {
-                "port": 11800,
-                "difficulty": 800000,
-                "desc": "Cloud Mining"
             }
         ],
         "varDiff": {
-            "minDiff": 100,
-            "maxDiff": 2000000,
-            "targetTime": 100,
-            "retargetTime": 30,
+            "minDiff": 10000,
+            "maxDiff": 3000000,
+            "targetTime": 120,
+            "retargetTime": 60,
             "checkSettingsTime": 30,
             "variancePercent": 30,
-            "maxJump": 100,
+            "maxJump": 30,
             "forced": "off",
             "enableTargetTimeVariance": "off"
         },
@@ -128,13 +125,13 @@
         "enabled": true,
         "hashrateWindow": 60,
         "updateInterval": 3,
-        "port": 10011,
+        "port": 10012,
         "blocks": 30,
         "payments": 30,
         "password": "VampyMonkeyHashing9"
     },
     "daemon": {
-        "host": "node.xmr.to",
+        "host": "nodex.monerujo.io",
         "port": 18081
         }, 
     "wallet": { 
@@ -144,7 +141,8 @@
     "redis": { 
         "host": "127.0.0.1", 
         "port": 6379, 
-        "auth": null 
+        "auth": null,
+	"db": 1
     },
     "monitoring": {
         "daemon": {
