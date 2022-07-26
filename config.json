@@ -71,13 +71,13 @@
             }
         ],
         "varDiff": {
-            "minDiff": 10000,
-            "maxDiff": 3000000,
+            "minDiff": 265000,
+            "maxDiff": 7500000,
             "targetTime": 120,
             "retargetTime": 60,
             "checkSettingsTime": 30,
             "variancePercent": 30,
-            "maxJump": 30,
+            "maxJump": 50,
             "forced": "off",
             "enableTargetTimeVariance": "off"
         },
@@ -131,7 +131,7 @@
         "password": "VampyMonkeyHashing9"
     },
     "daemon": {
-        "host": "nodex.monerujo.io",
+        "host": "127.0.0.1",
         "port": 18081
         }, 
     "wallet": { 
